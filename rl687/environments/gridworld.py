@@ -1,7 +1,7 @@
 import numpy as np
-from .skeleton import Environment
 
-class Gridworld(Environment):
+
+class Gridworld():
     """
     The Gridworld as described in the lecture notes of the 687 course material. 
     
@@ -28,44 +28,74 @@ class Gridworld(Environment):
     
     """
 
-    def __init__(self, startState=0, endState=24, shape=(5,5), obstacles=[12, 17], waterStates=[6, 18, 22]):
-        pass
-        
-    @property
-    def name(self):
-        pass
-        
-    @property
-    def reward(self):
-        pass
+    def __init__(self, start_state=(0, 0), end_state=(4, 4), shape=(5, 5), obstacles=[(2, 2), (3, 2)],
+                 water_states=[(1, 1), (3, 3), (4, 2)], gamma=1):
+        self.shape = shape
+        self.start_state = start_state
+        self.end_state = end_state
+        self.water_states = water_states
+        self.obstacles = obstacles
+        self.action_dict = {"up": 0, "right": 1, "down": 2, "left": 3, "stay": 4}
+        self.action_coords = np.array([(-1, 0), (0, 1), (1, 0), (0, -1), (0, 0)])
+        self.action_result_dict = {"action_succeeds": 0, "veer_right": 1, "veer_left": 2, "stays": 3}
+        self.state = start_state
+        self.gamma = gamma
 
-    @property
-    def action(self):
-        pass
+    @staticmethod
+    def action_attempted():
+        return np.random.choice(4, 1)
 
-    @property
-    def isEnd(self):
-        pass
+    def get_action(self, action_attempted=-1):
+        if action_attempted == -1:
+            action_attempted = self.action_attempted()
 
-    @property
-    def state(self):
-        pass
-
-    @property
-    def gamma(self):
-        pass
+        # print("action_attempted: ", action_attempted[0])
+        action_result = np.random.choice(4, 1, p=[0.8, 0.05, 0.05, 0.1])
+        # print("action_result: ", action_result)
+        if action_result == 0:
+            return action_attempted[0]
+        elif action_result == 1:
+            return (action_attempted[0] + 1) % 4
+        elif action_result == 2:
+            return (action_attempted[0] - 1) % 4
+        elif action_result == 3:
+            return self.action_dict["stay"]
 
     def step(self, action):
-        pass
+        next_state = (self.state[0] + self.action_coords[action][0],
+                      self.state[1] + self.action_coords[action][1])
+
+        if next_state in self.obstacles:
+            next_state = self.state
+
+        if next_state[0] > self.shape[0] - 1 or next_state[0] < 0:
+            next_state = self.state
+        elif next_state[1] > self.shape[1] - 1 or next_state[1] < 0:
+            next_state = self.state
+        # Collect reward
+        reward = self.R(next_state, action)
+
+        # Terminate if we reach bottom-right grid corner
+        goal = next_state == self.end_state
+
+        # Update state
+        self.state = next_state
+        return next_state, reward, goal
 
     def reset(self):
-        pass
-        
-    def R(self, _state):
+        self.state = self.start_state
+        return self.state
+
+    def R(self, state, action):
         """
         reward function
         
         output:
             reward -- the reward resulting in the agent being in a particular state
         """
-        pass
+        if state in self.water_states: #and action != self.action_dict["stay"]:
+            return -10
+        if state == self.end_state:
+            return 10
+
+        return 0
