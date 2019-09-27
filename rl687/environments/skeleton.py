@@ -72,9 +72,32 @@ class Environment(ABC):
         pass
 
     @abstractmethod
+    def nextState(self, state, action):
+        """
+        Provides the next state of the environment given an environment state
+        and an intended action. 
+        
+        output:
+            nextState: the next state
+        """
+        pass
+
+    @abstractmethod
     def reset(self):
         """
         The environment is reset.
+        """
+        pass
+    
+    @abstractmethod
+    def R(self, state, action, nextState):
+        """
+        The reward function. Defines the signal sent to the 
+        learning agent as it interacts in the environment.
+        
+        output:
+            reward -- the reward resulting from taking the
+                        last action in the environment.
         """
         pass
 
