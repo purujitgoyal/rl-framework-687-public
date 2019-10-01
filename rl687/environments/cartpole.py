@@ -78,8 +78,8 @@ class Cartpole(Environment):
         x_dot = state[1]
         theta_dot = state[3]
 
-        cos_theta = np.cos(self._theta)
-        sin_theta = np.cos(self._theta)
+        cos_theta = np.cos(state[2])
+        sin_theta = np.sin(state[2])
         total_mass = self._mp + self._mc
 
         temp1 = force + (self._mp*self._l*(self._dtheta**2)*sin_theta/total_mass)
