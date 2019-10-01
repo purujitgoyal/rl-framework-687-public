@@ -108,7 +108,7 @@ class Cartpole(Environment):
         self._dtheta = next_state[3]
         self._isEnd = self.terminal()
 
-        return self.state, self.reward, self.isEnd
+        return next_state, self.reward, self.isEnd
 
     def reset(self) -> None:
         """

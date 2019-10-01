@@ -2,6 +2,7 @@ import numpy as np
 
 from rl687.agents.cem import CEM
 from rl687.agents.ga import GA
+from rl687.environments.cartpole import Cartpole
 from rl687.environments.gridworld import Gridworld
 from rl687.policies.tabular_softmax import TabularSoftmax
 
@@ -104,8 +105,9 @@ def problem6():
 def main():
 
     print("hello, world")
-    problem1()
-
+    # problem1()
+    cartpole = Cartpole()
+    print(cartpole.step(1))
     #TODO
     pass
 
