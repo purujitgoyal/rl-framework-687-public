@@ -1,3 +1,8 @@
+import numpy as np
+
+from rl687.agents.cem import CEM
+from rl687.environments.gridworld import Gridworld
+from rl687.policies.tabular_softmax import TabularSoftmax
 
 
 def problem1():
@@ -12,17 +17,36 @@ def problem1():
     should include standard error or standard deviation error bars. Say which 
     error bar variant you used. 
     """
+    gridworld = Gridworld()
 
-    #TODO
-    pass
+    def evaluate(theta: np.ndarray, num_episodes: int):
+        returns = np.zeros(num_episodes)
+        for episode in range(num_episodes):
+            gridworld.reset()
+            step = 0
+            g = 0
+            tabular_policy = TabularSoftmax(numStates=25, numActions=4, theta=theta.reshape(25, 4))
+            while not gridworld.isEnd:
+                s, r, e = gridworld.step(tabular_policy.sampleAction(gridworld.state))
+                g += (gridworld.gamma ** step) * r
+                step += 1
+            returns[episode] = g
+            print(g)
+        # print("Average: {}\nStandard Deviation: {}\nMin: {}\nMax: {}".format( \
+        #     np.mean(returns), np.std(returns), np.min(returns), np.max(returns)))
+        return np.mean(returns)
+
+    cem = CEM(np.zeros(100), 0.1, 10, 5, 3, evaluate)
+    cem.train()
+
 
 def problem2():
     """
     Repeat the previous question, but using first-choice hill-climbing on the 
     More-Watery 687-Gridworld domain. Report the same quantities.
     """
-    
-    #TODO
+
+    # TODO
     pass
 
 
@@ -33,7 +57,7 @@ def problem3():
     quantities.
     """
 
-    #TODO
+    # TODO
     pass
 
 
@@ -48,8 +72,9 @@ def problem4():
     
     """
 
-    #TODO
+    # TODO
     pass
+
 
 def problem5():
     """
@@ -58,8 +83,9 @@ def problem5():
     and how the policy was parameterized. 
     
     """
-    #TODO
+    # TODO
     pass
+
 
 def problem6():
     """
@@ -67,15 +93,16 @@ def problem6():
     this homework) on the cart-pole domain. Report the same quantities and how
     the policy was parameterized. 
     """
-    
-    #TODO
+
+    # TODO
     pass
 
+
 def main():
-    
     print("hello, world")
-    
-    #TODO
+    problem1()
+
+    # TODO
     pass
 
 

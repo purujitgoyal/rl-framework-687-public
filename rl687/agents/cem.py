@@ -65,15 +65,15 @@ class CEM(BBOAgent):
         elite_index = episode_returns.argsort()[-self._num_elite:]
         # elite_returns = episode_returns[elite_index]
         elite_thetas = episode_thetas[elite_index]
-        self._theta = np.mean(elite_thetas)
+        self._theta = np.mean(elite_thetas, axis=0)
         cov_matrix = self._epsilon * np.identity(self._theta.size)
         temp = elite_thetas - self.parameters
         for i in range(self._num_elite):
-            temp[i] = temp[i].reshape(self._theta.size, 1)
-            cov_matrix += temp[i].dot(temp[i].T)
+            temp2 = temp[i].reshape(self._theta.size, 1)
+            cov_matrix += temp2.dot(temp2.T)
 
         self._Sigma = cov_matrix / (self._epsilon + self._num_elite)
-        return episode_returns
+        return self._theta
 
     def reset(self) -> None:
         self._theta = self._initial_theta
