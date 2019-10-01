@@ -39,7 +39,7 @@ class GA(BBOAgent):
         self._num_parents = 5
         self._num_children = 3
         self._population_size = populationSize
-        self._population = initPopulationFunction(populationSize)
+        self._population = self._init_population(self._population_size)
         self._alpha = 2.5
 
     @property
