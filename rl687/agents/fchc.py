@@ -22,8 +22,7 @@ class FCHC(BBOAgent):
         output: the estimated return of the policy 
     """
 
-    def __init__(self, theta: np.ndarray, sigma: float, evaluationFunction: Callable, numEpisodes: int = 10,
-                 env: Environment = None):
+    def __init__(self, theta: np.ndarray, sigma: float, evaluationFunction: Callable, numEpisodes: int = 10):
         self._name = "First_Choice_Hill_Climbing"
         self._theta = theta
         self._sigma = sigma
@@ -31,8 +30,7 @@ class FCHC(BBOAgent):
         self._num_episodes = numEpisodes
         self._evaluate = evaluationFunction
         self._theta_shape = theta.shape
-        self._env = env
-        self._expected_return = evaluationFunction(theta, numEpisodes, env)
+        self._expected_return = evaluationFunction(theta, numEpisodes)
 
     @property
     def name(self) -> str:
@@ -45,7 +43,7 @@ class FCHC(BBOAgent):
     def train(self) -> np.ndarray:
         # self._env.reset()
         theta = np.random.multivariate_normal(self.parameters, self._cov_matrix)
-        expected_return = self._evaluate(theta, self._num_episodes, self._env)
+        expected_return = self._evaluate(theta, self._num_episodes)
         if expected_return > self._expected_return:
             self._theta = theta
             self._expected_return = expected_return
@@ -56,5 +54,5 @@ class FCHC(BBOAgent):
 
     def reset(self) -> None:
         self._theta = np.zeros(self._theta_shape)
-        self._expected_return = self._evaluate(self._theta, self._num_episodes, self._env)
+        self._expected_return = self._evaluate(self._theta, self._num_episodes)
 

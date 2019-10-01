@@ -33,17 +33,16 @@ class CEM(BBOAgent):
     """
         
     def __init__(self, theta: np.ndarray, sigma: float, popSize: int, numElite: int, numEpisodes: int,
-                 evaluationFunction: Callable, epsilon: float = 0.0001, env: Environment = None):
+                 evaluationFunction: Callable, epsilon: float = 0.0001):
         self._name = "Cross_Entropy_Method"
         self._theta = theta
         self._sigma = sigma
-        self._cov_matrix = sigma * np.identity(theta.size)
+        self._Sigma = sigma * np.identity(theta.size)
         self._pop_size = popSize
         self._num_elite = numElite
         self._num_episodes = numEpisodes
         self._epsilon = epsilon
         self._evaluate = evaluationFunction
-        self._env = env
         self._theta_shape = theta.shape
 
     @property
@@ -59,8 +58,8 @@ class CEM(BBOAgent):
         episode_thetas = np.zeros((self._pop_size, self._theta.size))
         for k in range(self._pop_size):
             # self._env.reset()
-            theta_k = np.random.multivariate_normal(self.parameters, self._cov_matrix)
-            episode_returns[k] = self._evaluate(theta_k, self._num_episodes, self._env)
+            theta_k = np.random.multivariate_normal(self.parameters, self._Sigma)
+            episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
 
         elite_index = episode_returns.argsort()[-self._num_elite:]
@@ -73,9 +72,9 @@ class CEM(BBOAgent):
             temp[i] = temp[i].reshape(self._theta.size, 1)
             cov_matrix += temp[i].dot(temp[i].T)
 
-        self._cov_matrix = cov_matrix/(self._epsilon + self._num_elite)
+        self._Sigma = cov_matrix / (self._epsilon + self._num_elite)
         return episode_returns
 
     def reset(self) -> None:
         self._theta = np.zeros(self._theta_shape)
-        self._cov_matrix = self._sigma * np.identity(self._theta.size)
+        self._Sigma = self._sigma * np.identity(self._theta.size)
