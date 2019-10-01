@@ -36,6 +36,7 @@ class CEM(BBOAgent):
                  evaluationFunction: Callable, epsilon: float = 0.0001):
         self._name = "Cross_Entropy_Method"
         self._theta = theta
+        self._initial_theta = theta
         self._sigma = sigma
         self._Sigma = sigma * np.identity(theta.size)
         self._pop_size = popSize
@@ -43,7 +44,6 @@ class CEM(BBOAgent):
         self._num_episodes = numEpisodes
         self._epsilon = epsilon
         self._evaluate = evaluationFunction
-        self._theta_shape = theta.shape
 
     @property
     def name(self) -> str:
@@ -76,5 +76,5 @@ class CEM(BBOAgent):
         return episode_returns
 
     def reset(self) -> None:
-        self._theta = np.zeros(self._theta_shape)
+        self._theta = self._initial_theta
         self._Sigma = self._sigma * np.identity(self._theta.size)

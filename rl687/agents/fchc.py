@@ -25,6 +25,7 @@ class FCHC(BBOAgent):
     def __init__(self, theta: np.ndarray, sigma: float, evaluationFunction: Callable, numEpisodes: int = 10):
         self._name = "First_Choice_Hill_Climbing"
         self._theta = theta
+        self._initial_theta = theta
         self._sigma = sigma
         self._cov_matrix = sigma * np.identity(theta.size)
         self._num_episodes = numEpisodes
@@ -53,6 +54,6 @@ class FCHC(BBOAgent):
         return self._theta
 
     def reset(self) -> None:
-        self._theta = np.zeros(self._theta_shape)
+        self._theta = self._initial_theta
         self._expected_return = self._evaluate(self._theta, self._num_episodes)
 
