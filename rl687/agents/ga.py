@@ -30,18 +30,17 @@ class GA(BBOAgent):
     """
 
     def __init__(self, populationSize: int, evaluationFunction: Callable,
-                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10, numParents: int = 1,
-                 numChildren: int = 1, alpha: float = 2.5):
+                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10):
         self._name = "Genetic_Algorithm"
         self._init_population = initPopulationFunction
         self._evaluate = evaluationFunction
         self._num_elite = numElite
         self._num_episodes = numEpisodes
-        self._num_parents = numParents
-        self._num_children = numChildren
+        self._num_parents = 5
+        self._num_children = 3
         self._population_size = populationSize
         self._population = initPopulationFunction(populationSize)
-        self._alpha = alpha
+        self._alpha = 2.5
 
     @property
     def name(self) -> str:
