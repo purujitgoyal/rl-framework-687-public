@@ -1,6 +1,7 @@
 import numpy as np
 
 from rl687.agents.cem import CEM
+from rl687.agents.ga import GA
 from rl687.environments.gridworld import Gridworld
 from rl687.policies.tabular_softmax import TabularSoftmax
 
@@ -36,8 +37,13 @@ def problem1():
         #     np.mean(returns), np.std(returns), np.min(returns), np.max(returns)))
         return np.mean(returns)
 
-    cem = CEM(np.zeros(100), 0.1, 10, 5, 3, evaluate)
-    cem.train()
+    def init_population(population_size: int):
+        return np.random.standard_normal((population_size, 100))
+    # cem = CEM(np.zeros(100), 0.1, 10, 5, 3, evaluate)
+    # cem.train()
+
+    ga = GA(10, evaluate, init_population, 1, 3)
+    ga.train()
 
 
 def problem2():
@@ -46,7 +52,7 @@ def problem2():
     More-Watery 687-Gridworld domain. Report the same quantities.
     """
 
-    # TODO
+    #TODO
     pass
 
 
@@ -57,7 +63,7 @@ def problem3():
     quantities.
     """
 
-    # TODO
+    #TODO
     pass
 
 
@@ -72,9 +78,8 @@ def problem4():
     
     """
 
-    # TODO
+    #TODO
     pass
-
 
 def problem5():
     """
@@ -83,9 +88,8 @@ def problem5():
     and how the policy was parameterized. 
     
     """
-    # TODO
+    #TODO
     pass
-
 
 def problem6():
     """
@@ -94,15 +98,15 @@ def problem6():
     the policy was parameterized. 
     """
 
-    # TODO
+    #TODO
     pass
 
-
 def main():
+
     print("hello, world")
     problem1()
 
-    # TODO
+    #TODO
     pass
 
 

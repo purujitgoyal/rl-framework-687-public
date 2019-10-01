@@ -59,13 +59,13 @@ class GA(BBOAgent):
             child -- a mutated copy of the parent
         """
         epsilon = np.random.standard_normal(parent.size)
-        return parent + self._alpha*epsilon
+        return parent + self._alpha * epsilon
 
     def train(self) -> np.ndarray:
         episode_returns = np.zeros(self._population.shape[0])
         episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
         for k in range(self._population.shape[0]):
-            theta_k = self._population[0,:]
+            theta_k = self._population[k, :]
             episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
 

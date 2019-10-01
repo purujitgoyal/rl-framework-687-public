@@ -99,6 +99,7 @@ class Cartpole(Environment):
         takes one step in the environment and returns the next state, reward, and if it is in the terminal state
         """
         next_state = self.nextState(self.state, action)
+        self._action = action
         self._reward = self.R(self.state, action, next_state)
         self._t += self._dt
         self._x = next_state[0]
