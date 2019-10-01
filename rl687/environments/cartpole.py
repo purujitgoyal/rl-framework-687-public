@@ -82,7 +82,7 @@ class Cartpole(Environment):
         sin_theta = np.sin(state[2])
         total_mass = self._mp + self._mc
 
-        temp1 = force + (self._mp*self._l*(self._dtheta**2)*sin_theta/total_mass)
+        temp1 = (force + self._mp*self._l*(state[3]**2)*sin_theta)/total_mass
         temp2 = 4.0/3.0 - (self._mp*(cos_theta**2)/total_mass)
 
         dtheta_dot = (self._g*sin_theta - cos_theta*temp1)/(self._l*temp2)
