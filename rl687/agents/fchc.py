@@ -1,4 +1,6 @@
 import numpy as np
+
+from rl687.environments.skeleton import Environment
 from .bbo_agent import BBOAgent
 
 from typing import Callable
@@ -19,25 +21,40 @@ class FCHC(BBOAgent):
         input: policy (np.ndarray: a parameterized policy), numEpisodes
         output: the estimated return of the policy 
     """
-    
-    def __init__(self, theta:np.ndarray, sigma:float, evaluationFunction:Callable, numEpisodes:int=10):
+
+    def __init__(self, theta: np.ndarray, sigma: float, evaluationFunction: Callable, numEpisodes: int = 10,
+                 env: Environment = None):
         self._name = "First_Choice_Hill_Climbing"
-        #TODO
-        pass
+        self._theta = theta
+        self._sigma = sigma
+        self._cov_matrix = sigma * np.identity(theta.size)
+        self._num_episodes = numEpisodes
+        self._evaluate = evaluationFunction
+        self._theta_shape = theta.shape
+        self._env = env
+        self._expected_return = evaluationFunction(theta, numEpisodes, env)
 
     @property
-    def name(self)->str:
+    def name(self) -> str:
         return self._name
-    
+
     @property
-    def parameters(self)->np.ndarray:
-        #TODO
-        pass
+    def parameters(self) -> np.ndarray:
+        return self._theta.flatten()
 
-    def train(self)->np.ndarray:
-        #TODO
-        pass
+    def train(self) -> np.ndarray:
+        # self._env.reset()
+        theta = np.random.multivariate_normal(self.parameters, self._cov_matrix)
+        expected_return = self._evaluate(theta, self._num_episodes, self._env)
+        if expected_return > self._expected_return:
+            self._theta = theta
+            self._expected_return = expected_return
+        else:
+            self._expected_return = self._evaluate(self.parameters, self._cov_matrix)
 
-    def reset(self)->None:
-        #TODO
-        pass
+        return self._theta
+
+    def reset(self) -> None:
+        self._theta = np.zeros(self._theta_shape)
+        self._expected_return = self._evaluate(self._theta, self._num_episodes, self._env)
+

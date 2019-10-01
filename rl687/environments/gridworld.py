@@ -50,6 +50,8 @@ class Gridworld(Environment):
         # dicts mapping actions to the appropriate rotations
         self._rotateLeft = {0: 2, 1: 3, 2: 1, 3: 0}
         self._rotateRight = {0: 3, 1: 2, 2: 0, 3: 1}
+        self._n_states = 25
+        self._n_actions = 4
 
     @property
     def name(self) -> str:

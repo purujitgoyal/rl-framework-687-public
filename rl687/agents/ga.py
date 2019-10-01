@@ -1,4 +1,6 @@
 import numpy as np
+
+from rl687.environments.skeleton import Environment
 from .bbo_agent import BBOAgent
 
 from typing import Callable
@@ -27,24 +29,30 @@ class GA(BBOAgent):
     
     """
 
-    def __init__(self, populationSize:int, evaluationFunction:Callable, 
-                 initPopulationFunction:Callable, numElite:int=1, numEpisodes:int=10):
+    def __init__(self, populationSize: int, evaluationFunction: Callable,
+                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10, numParents: int = 1,
+                 numChildren: int = 1, alpha: float = 2.5, env: Environment = None):
         self._name = "Genetic_Algorithm"
-        self._population = None #TODO: set this value to the most recently created generation
-    
-        #TODO
-        pass
+        self._init_population = initPopulationFunction
+        self._evaluate = evaluationFunction
+        self._num_elite = numElite
+        self._num_episodes = numEpisodes
+        self._num_parents = numParents
+        self._num_children = numChildren
+        self._population_size = populationSize
+        self._population = initPopulationFunction(populationSize)
+        self._env = env
+        self._alpha = alpha
 
     @property
-    def name(self)->str:
+    def name(self) -> str:
         return self._name
-    
-    @property
-    def parameters(self)->np.ndarray:
-        #TODO
-        pass
 
-    def _mutate(self, parent:np.ndarray)->np.ndarray:
+    @property
+    def parameters(self) -> np.ndarray:
+        return np.mean(self._population, axis=0)
+
+    def _mutate(self, parent: np.ndarray) -> np.ndarray:
         """
         Perform a mutation operation to create a child for the next generation.
         The parent must remain unmodified. 
@@ -52,14 +60,30 @@ class GA(BBOAgent):
         output:
             child -- a mutated copy of the parent
         """
-        
-        #TODO
-        pass
+        epsilon = np.random.standard_normal(parent.size)
+        return parent + self._alpha*epsilon
 
-    def train(self)->np.ndarray:
-        #TODO
-        pass
+    def train(self) -> np.ndarray:
+        episode_returns = np.zeros(self._population.shape[0])
+        episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
+        for k in range(self._population.shape[0]):
+            theta_k = self._population[0,:]
+            episode_returns[k] = self._evaluate(theta_k, self._num_episodes, self._env)
+            episode_thetas[k] = theta_k
 
-    def reset(self)->None:
-        #TODO
-        pass
+        sorted_returns_index = episode_returns.argsort()
+        elite_index = sorted_returns_index[-self._num_elite:]
+        elite_thetas = episode_thetas[elite_index]
+        parents_index = sorted_returns_index[-self._num_parents:]
+        parents_thetas = episode_thetas[parents_index]
+        child_thetas = np.zeros((self._num_children, self._population.shape[1]))
+        random_parents = np.random.choice(parents_thetas.shape[0], self._num_children)
+        for i in range(self._num_children):
+            child_thetas[i] = self._mutate(parents_thetas[random_parents[i]])
+
+        self._population = np.append(elite_thetas, child_thetas, axis=0)
+
+        return self._population
+
+    def reset(self) -> None:
+        self._population = self._init_population(self._population_size)

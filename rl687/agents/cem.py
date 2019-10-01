@@ -1,4 +1,6 @@
 import numpy as np
+
+from rl687.environments.skeleton import Environment
 from .bbo_agent import BBOAgent
 
 from typing import Callable
@@ -29,31 +31,51 @@ class CEM(BBOAgent):
         output: the estimated return of the policy
     epsilon (float): small numerical stability parameter
     """
-
-    def __init__(self, theta:np.ndarray, sigma:float, popSize:int, numElite:int, numEpisodes:int, evaluationFunction:Callable, epsilon:float=0.0001):
-
+        
+    def __init__(self, theta: np.ndarray, sigma: float, popSize: int, numElite: int, numEpisodes: int,
+                 evaluationFunction: Callable, epsilon: float = 0.0001, env: Environment = None):
         self._name = "Cross_Entropy_Method"
-        
-        self._theta = None #TODO: set this value to the current mean parameter vector
-        self._Sigma = None #TODO: set this value to the current covariance matrix
-      
-        #TODO
-        pass
-        
+        self._theta = theta
+        self._sigma = sigma
+        self._cov_matrix = sigma * np.identity(theta.size)
+        self._pop_size = popSize
+        self._num_elite = numElite
+        self._num_episodes = numEpisodes
+        self._epsilon = epsilon
+        self._evaluate = evaluationFunction
+        self._env = env
+        self._theta_shape = theta.shape
 
     @property
-    def name(self)->str:
+    def name(self) -> str:
         return self._name
-    
+
     @property
-    def parameters(self)->np.ndarray:
-        #TODO
-        pass
+    def parameters(self) -> np.ndarray:
+        return self._theta.flatten()
 
-    def train(self)->np.ndarray:
-        #TODO
-        pass
+    def train(self) -> np.ndarray:
+        episode_returns = np.zeros(self._pop_size)
+        episode_thetas = np.zeros((self._pop_size, self._theta.size))
+        for k in range(self._pop_size):
+            # self._env.reset()
+            theta_k = np.random.multivariate_normal(self.parameters, self._cov_matrix)
+            episode_returns[k] = self._evaluate(theta_k, self._num_episodes, self._env)
+            episode_thetas[k] = theta_k
 
-    def reset(self)->None:
-        #TODO
-        pass
+        elite_index = episode_returns.argsort()[-self._num_elite:]
+        # elite_returns = episode_returns[elite_index]
+        elite_thetas = episode_thetas[elite_index]
+        self._theta = np.mean(elite_thetas)
+        cov_matrix = self._epsilon * np.identity(self._theta.size)
+        temp = elite_thetas - self.parameters
+        for i in range(self._num_elite):
+            temp[i] = temp[i].reshape(self._theta.size, 1)
+            cov_matrix += temp[i].dot(temp[i].T)
+
+        self._cov_matrix = cov_matrix/(self._epsilon + self._num_elite)
+        return episode_returns
+
+    def reset(self) -> None:
+        self._theta = np.zeros(self._theta_shape)
+        self._cov_matrix = self._sigma * np.identity(self._theta.size)
