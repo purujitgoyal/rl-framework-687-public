@@ -30,7 +30,7 @@ class FCHC(BBOAgent):
         self._num_episodes = numEpisodes
         self._evaluate = evaluationFunction
         self._theta_shape = theta.shape
-        self._expected_return = evaluationFunction(theta, numEpisodes)
+        self._expected_return = self._evaluate(theta, numEpisodes)
 
     @property
     def name(self) -> str:
@@ -47,8 +47,8 @@ class FCHC(BBOAgent):
         if expected_return > self._expected_return:
             self._theta = theta
             self._expected_return = expected_return
-        else:
-            self._expected_return = self._evaluate(self.parameters, self._cov_matrix)
+        # else:
+        #     self._expected_return = self._evaluate(self.parameters, self._cov_matrix)
 
         return self._theta
 
