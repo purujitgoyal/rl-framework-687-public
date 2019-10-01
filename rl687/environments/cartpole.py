@@ -92,7 +92,7 @@ class Cartpole(Environment):
         return next_state
 
     def R(self, state: np.ndarray, action: int, nextState: np.ndarray) -> float:
-        return 0 if (np.all(state == nextState) and self.isEnd) else 1
+        return 1
 
     def step(self, action: int) -> Tuple[np.ndarray, float, bool]:
         """
