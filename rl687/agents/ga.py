@@ -77,8 +77,8 @@ class GA(BBOAgent):
     def train(self) -> np.ndarray:
         episode_returns = np.zeros(self._population.shape[0])
         episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
+        max_reward = -np.inf
         for k in range(self._population.shape[0]):
-            max_reward = -np.inf
             theta_k = self._population[k, :]
             episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
@@ -103,5 +103,13 @@ class GA(BBOAgent):
 
     def reset(self) -> None:
         self._population = self._init_population(self._population_size)
-        print(self._population.shape)
-        self._parameters = np.zeros(self._population[0].shape)
+        episode_returns = np.zeros(self._population.shape[0])
+        episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
+        max_reward = -np.inf
+        for k in range(self._population.shape[0]):
+            theta_k = self._population[k, :]
+            episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
+            episode_thetas[k] = theta_k
+            if episode_returns[k] > max_reward:
+                max_reward = episode_returns[k]
+                self._parameters = theta_k
