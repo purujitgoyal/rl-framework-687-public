@@ -41,7 +41,7 @@ class GA(BBOAgent):
         self._population_size = populationSize
         self._population = self._init_population(self._population_size)
         self._alpha = 2.5
-        self._parameters = np.zeros(self._population.shape[1], 1)
+        self._parameters = None
 
     @property
     def name(self) -> str:
@@ -87,4 +87,4 @@ class GA(BBOAgent):
 
     def reset(self) -> None:
         self._population = self._init_population(self._population_size)
-        self._parameters = np.zeros(self._population.shape[1], 1)
+        self._parameters = None
