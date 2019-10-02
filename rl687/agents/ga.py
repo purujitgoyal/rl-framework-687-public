@@ -87,4 +87,5 @@ class GA(BBOAgent):
 
     def reset(self) -> None:
         self._population = self._init_population(self._population_size)
+        print(self._population.shape)
         self._parameters = None
