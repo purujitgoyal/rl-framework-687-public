@@ -107,7 +107,9 @@ def main():
     print("hello, world")
     # problem1()
     cartpole = Cartpole()
-    print(cartpole.step(1))
+    for i in range(11):
+        print("step: ", i)
+        print(cartpole.step(0))
     #TODO
     pass
 

@@ -68,8 +68,8 @@ class Cartpole(Environment):
         """
         Compute the next state of the pendulum using the euler approximation to the dynamics
         """
-        if self.isEnd:
-            return state
+        # if self.isEnd:
+        #     return state
 
         force = self._maxF
         if action == 0:
