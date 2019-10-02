@@ -27,11 +27,13 @@ class FCHC(BBOAgent):
         self._theta = theta
         self._initial_theta = theta
         self._sigma = sigma
+        self._initial_sigma = sigma
         self._cov_matrix = sigma * np.identity(theta.size)
         self._num_episodes = numEpisodes
         self._evaluate = evaluationFunction
         self._theta_shape = theta.shape
         self._expected_return = self._evaluate(theta, numEpisodes)
+        self._counter = 0
 
     @property
     def name(self) -> str:
@@ -43,17 +45,33 @@ class FCHC(BBOAgent):
 
     def train(self) -> np.ndarray:
         # self._env.reset()
+        if self._counter > 10:
+            print("Updating max return yet")
+            self._expected_return = self._evaluate(self.parameters, self._num_episodes)
+            self._counter = 0
+            self._sigma *= 0.99
+            self._cov_matrix = self._sigma * np.identity(self._theta.size)
+            print(self._sigma)
+
+
         theta = np.random.multivariate_normal(self.parameters, self._cov_matrix)
         expected_return = self._evaluate(theta, self._num_episodes)
         if expected_return > self._expected_return:
             self._theta = theta
             self._expected_return = expected_return
-        # else:
-        #     self._expected_return = self._evaluate(self.parameters, self._cov_matrix)
+            self._counter = 0
+        else:
+            self._counter += 1
 
+        print(expected_return)
+        print("max return yet: ", self._expected_return)
         return self._theta
 
     def reset(self) -> None:
         self._theta = self._initial_theta
         self._expected_return = self._evaluate(self._theta, self._num_episodes)
+        self._sigma = self._initial_sigma
+        self._cov_matrix = self._sigma * np.identity(self._theta.size)
+        self._counter = 0
+
 

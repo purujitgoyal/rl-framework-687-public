@@ -1,6 +1,7 @@
 import numpy as np
 
 from rl687.agents.cem import CEM
+from rl687.agents.fchc import FCHC
 from rl687.agents.ga import GA
 from rl687.environments.cartpole import Cartpole
 from rl687.environments.gridworld import Gridworld
@@ -32,19 +33,38 @@ def problem1():
                 s, r, e = gridworld.step(tabular_policy.sampleAction(gridworld.state))
                 g += (gridworld.gamma ** step) * r
                 step += 1
+                if step > 200:
+                    g += -50
+                    break
+
             returns[episode] = g
-            print(g)
+            # print(g)
         # print("Average: {}\nStandard Deviation: {}\nMin: {}\nMax: {}".format( \
         #     np.mean(returns), np.std(returns), np.min(returns), np.max(returns)))
         return np.mean(returns)
 
     def init_population(population_size: int):
         return np.random.standard_normal((population_size, 100))
-    # cem = CEM(np.zeros(100), 0.1, 10, 5, 3, evaluate)
-    # cem.train()
 
-    ga = GA(10, evaluate, init_population, 1, 3)
-    ga.train()
+    # cem = CEM(theta=np.zeros(100), sigma=0.2, popSize=70, numElite=12, numEpisodes=75, evaluationFunction=evaluate, epsilon=1.5)
+    # for i in range(100):
+    #     print("iteration: ", i)
+    #     cem.train()
+
+    # fchc = FCHC(theta=np.zeros(100), sigma=0.3, evaluationFunction=evaluate, numEpisodes=100)
+    # for i in range(500):
+    #     print("iteration: ", i)
+    #     fchc.train()
+
+    ga = GA(populationSize=50, evaluationFunction=evaluate, initPopulationFunction=init_population, numElite=15,
+            numEpisodes=50, numParents=15, alpha=0.5)
+    for i in range(100):
+        print("iteration: ", i)
+        ga.train()
+
+    print("final expected return")
+    print(evaluate(ga.parameters, 100))
+
 
 
 def problem2():
@@ -105,11 +125,11 @@ def problem6():
 def main():
 
     print("hello, world")
-    # problem1()
-    cartpole = Cartpole()
-    for i in range(11):
-        print("step: ", i)
-        print(cartpole.step(0))
+    problem1()
+    # cartpole = Cartpole()
+    # for i in range(11):
+    #     print("step: ", i)
+    #     print(cartpole.step(0))
     #TODO
     pass
 

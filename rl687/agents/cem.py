@@ -61,6 +61,7 @@ class CEM(BBOAgent):
             theta_k = np.random.multivariate_normal(self.parameters, self._Sigma)
             episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
+            print(episode_returns[k])
 
         elite_index = episode_returns.argsort()[-self._num_elite:]
         # elite_returns = episode_returns[elite_index]
