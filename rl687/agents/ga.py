@@ -43,6 +43,17 @@ class GA(BBOAgent):
         self._alpha = alpha
         self._parameters = np.zeros(self._population[0].shape)
 
+        episode_returns = np.zeros(self._population.shape[0])
+        episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
+        for k in range(self._population.shape[0]):
+            max_reward = -np.inf
+            theta_k = self._population[k, :]
+            episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
+            episode_thetas[k] = theta_k
+            if episode_returns[k] > max_reward:
+                max_reward = episode_returns[k]
+                self._parameters = theta_k
+
     @property
     def name(self) -> str:
         return self._name
@@ -66,9 +77,13 @@ class GA(BBOAgent):
         episode_returns = np.zeros(self._population.shape[0])
         episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
         for k in range(self._population.shape[0]):
+            max_reward = -np.inf
             theta_k = self._population[k, :]
             episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
+            if episode_returns[k] > max_reward:
+                max_reward = episode_returns[k]
+                self._parameters = theta_k
 
         sorted_returns_index = episode_returns.argsort()
         elite_index = sorted_returns_index[-self._num_elite:]
@@ -81,7 +96,7 @@ class GA(BBOAgent):
             child_thetas[i] = self._mutate(parents_thetas[random_parents[i]])
 
         self._population = np.append(elite_thetas, child_thetas, axis=0)
-        self._parameters = np.mean(self._population, axis=0)
+        # self._parameters = np.mean(self._population, axis=0)
 
         return self.parameters
 
