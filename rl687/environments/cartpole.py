@@ -130,7 +130,7 @@ class Cartpole(Environment):
             pole falls |theta| > (pi/12.0)
             cart hits the sides |x| >= 3
         """
-        if (np.abs(self._theta) > self._failAngle) or np.abs(self._x) >= 3 or self._t > 20:
+        if (np.abs(self._theta) > self._failAngle) or np.abs(self._x) >= 3 or self._t >= 20:
             return True
 
         return False
