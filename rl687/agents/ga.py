@@ -30,7 +30,8 @@ class GA(BBOAgent):
     """
 
     def __init__(self, populationSize: int, evaluationFunction: Callable,
-                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10, numParents = 10, alpha: float = 2.5):
+                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10, numParents: int = 10,
+                 alpha: float = 2.5):
         self._name = "Genetic_Algorithm"
         self._init_population = initPopulationFunction
         self._evaluate = evaluationFunction
@@ -45,8 +46,8 @@ class GA(BBOAgent):
 
         episode_returns = np.zeros(self._population.shape[0])
         episode_thetas = np.zeros((self._population.shape[0], self._population.shape[1]))
+        max_reward = -np.inf
         for k in range(self._population.shape[0]):
-            max_reward = -np.inf
             theta_k = self._population[k, :]
             episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
