@@ -30,17 +30,17 @@ class GA(BBOAgent):
     """
 
     def __init__(self, populationSize: int, evaluationFunction: Callable,
-                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10, ):
+                 initPopulationFunction: Callable, numElite: int = 1, numEpisodes: int = 10, numParents = 10, alpha: float = 2.5):
         self._name = "Genetic_Algorithm"
         self._init_population = initPopulationFunction
         self._evaluate = evaluationFunction
         self._num_elite = numElite
         self._num_episodes = numEpisodes
-        self._num_parents = 5
+        self._num_parents = numParents
         self._num_children = populationSize - numElite
         self._population_size = populationSize
         self._population = self._init_population(self._population_size)
-        self._alpha = 2.5
+        self._alpha = alpha
         self._parameters = np.zeros(self._population[0].shape)
 
     @property
@@ -83,7 +83,7 @@ class GA(BBOAgent):
         self._population = np.append(elite_thetas, child_thetas, axis=0)
         self._parameters = np.mean(self._population, axis=0)
 
-        return self._population
+        return self.parameters
 
     def reset(self) -> None:
         self._population = self._init_population(self._population_size)
