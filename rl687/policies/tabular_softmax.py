@@ -14,12 +14,10 @@ class TabularSoftmax(Policy):
     numActions (int): the number of actions the tabular softmax policy has
     """
 
-    def __init__(self, numStates: int, numActions: int, theta: np.ndarray = None):
+    def __init__(self, numStates: int, numActions: int):
         # The internal policy parameters must be stored as a matrix of size
         # (numStates x numActions)
-        self._theta = theta
-        if theta is None:
-            self._theta = np.zeros((numStates, numActions))
+        self._theta = np.zeros((numStates, numActions))
         self._numStates = numStates
         self._numActions = numActions
 

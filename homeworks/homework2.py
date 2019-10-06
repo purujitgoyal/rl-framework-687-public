@@ -5,6 +5,8 @@ from rl687.agents.fchc import FCHC
 from rl687.agents.ga import GA
 from rl687.environments.cartpole import Cartpole
 from rl687.environments.gridworld import Gridworld
+from rl687.evaluate.cartpole_evaluate import CartpoleEvaluate
+from rl687.evaluate.gridworld_evaluate import GridworldEvaluate
 from rl687.policies.tabular_softmax import TabularSoftmax
 
 
@@ -22,49 +24,50 @@ def problem1():
     """
     gridworld = Gridworld()
 
-    def evaluate(theta: np.ndarray, num_episodes: int):
-        returns = np.zeros(num_episodes)
-        for episode in range(num_episodes):
-            gridworld.reset()
-            step = 0
-            g = 0
-            tabular_policy = TabularSoftmax(numStates=25, numActions=4, theta=theta.reshape(25, 4))
-            while not gridworld.isEnd:
-                s, r, e = gridworld.step(tabular_policy.sampleAction(gridworld.state))
-                g += (gridworld.gamma ** step) * r
-                step += 1
-                if step > 200:
-                    g += -50
-                    break
-
-            returns[episode] = g
-            # print(g)
-        # print("Average: {}\nStandard Deviation: {}\nMin: {}\nMax: {}".format( \
-        #     np.mean(returns), np.std(returns), np.min(returns), np.max(returns)))
-        return np.mean(returns)
-
     def init_population(population_size: int):
         return np.random.standard_normal((population_size, 100))
 
-    # cem = CEM(theta=np.zeros(100), sigma=0.2, popSize=70, numElite=12, numEpisodes=75, evaluationFunction=evaluate, epsilon=1.5)
+    gridworld_evaluate = GridworldEvaluate(numStates=25, numActions=4)
+
+    # cem = CEM(theta=np.zeros(100), sigma=0.2, popSize=50, numElite=12, numEpisodes=50,
+    #           evaluationFunction=gridworld_evaluate, epsilon=1.5)
+    # gridworld_evaluate.reset()
+    # for t in range(5):
+    #     print("Trial: ", t)
+    #     cem.reset()
+    #     for i in range(100):
+    #         print("iteration: ", i)
+    #         cem.train()
+    #     print(len(gridworld_evaluate.returns()))
+    #
+    # gridworld_evaluate.plot(5)
+    #
+    fchc = FCHC(theta=np.zeros(100), sigma=0.35, evaluationFunction=gridworld_evaluate, numEpisodes=200)
+    gridworld_evaluate.reset()
+    for t in range(50):
+        print("Trial: ", t)
+        fchc.reset()
+        for i in range(500):
+            print("iteration: ", i)
+            fchc.train()
+
+    gridworld_evaluate.plot(50)
+
+    # print(len(gridworld_evaluate.returns()))
+    #
+    # print("final expected return")
+    # print(evaluate(fchc.parameters, 200))
+    #
+    # ga = GA(populationSize=50, evaluationFunction=gridworld_evaluate, initPopulationFunction=init_population, numElite=15,
+    #         numEpisodes=50, numParents=20, alpha=1.5)
     # for i in range(100):
     #     print("iteration: ", i)
-    #     cem.train()
+    #     ga.train()
 
-    # fchc = FCHC(theta=np.zeros(100), sigma=0.3, evaluationFunction=evaluate, numEpisodes=100)
-    # for i in range(500):
-    #     print("iteration: ", i)
-    #     fchc.train()
+    # print(len(gridworld_evaluate.returns()))
 
-    ga = GA(populationSize=50, evaluationFunction=evaluate, initPopulationFunction=init_population, numElite=15,
-            numEpisodes=50, numParents=15, alpha=0.5)
-    for i in range(100):
-        print("iteration: ", i)
-        ga.train()
-
-    print("final expected return")
-    print(evaluate(ga.parameters, 100))
-
+    # print("final expected return")
+    # print(evaluate(cem.parameters, 200))
 
 
 def problem2():
@@ -73,7 +76,7 @@ def problem2():
     More-Watery 687-Gridworld domain. Report the same quantities.
     """
 
-    #TODO
+    # TODO
     pass
 
 
@@ -84,7 +87,7 @@ def problem3():
     quantities.
     """
 
-    #TODO
+    # TODO
     pass
 
 
@@ -98,9 +101,25 @@ def problem4():
     Report the same quantities, as well as how you parameterized the policy. 
     
     """
+    def init_population(population_size: int):
+        return np.random.standard_normal((population_size, 32))
+    cartpole_evaluate = CartpoleEvaluate(numStateVariables=4, numActions=2, numFeaturesSize=2)
+    # cem = CEM(theta=np.zeros(32), sigma=3.5, popSize=25, numElite=6, numEpisodes=20,
+    #           evaluationFunction=cartpole_evaluate, epsilon=2)
+    ga = GA(populationSize=25, evaluationFunction=cartpole_evaluate, initPopulationFunction=init_population, numElite=6, numEpisodes=20, numParents=6, alpha=2.5)
+    cartpole_evaluate.reset()
+    for t in range(1):
+        print("Trial: ", t)
+        ga.reset()
+        for i in range(50):
+            print("iteration: ", i)
+            ga.train()
 
-    #TODO
-    pass
+    print("final expected return")
+    print(cartpole_evaluate(ga.parameters, 200, False))
+
+    cartpole_evaluate.plot(4)
+
 
 def problem5():
     """
@@ -109,8 +128,9 @@ def problem5():
     and how the policy was parameterized. 
     
     """
-    #TODO
+    # TODO
     pass
+
 
 def problem6():
     """
@@ -119,18 +139,18 @@ def problem6():
     the policy was parameterized. 
     """
 
-    #TODO
+    # TODO
     pass
 
-def main():
 
+def main():
     print("hello, world")
-    problem1()
+    problem4()
     # cartpole = Cartpole()
     # for i in range(11):
     #     print("step: ", i)
     #     print(cartpole.step(0))
-    #TODO
+    # TODO
     pass
 
 

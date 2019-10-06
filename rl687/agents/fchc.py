@@ -45,14 +45,13 @@ class FCHC(BBOAgent):
 
     def train(self) -> np.ndarray:
         # self._env.reset()
-        if self._counter > 10:
+        if self._counter > 20:
             print("Updating max return yet")
-            self._expected_return = self._evaluate(self.parameters, self._num_episodes)
+            self._expected_return = self._evaluate(self.parameters, self._num_episodes, False)
             self._counter = 0
-            self._sigma *= 0.99
-            self._cov_matrix = self._sigma * np.identity(self._theta.size)
-            print(self._sigma)
-
+            # self._sigma *= 0.99
+            # self._cov_matrix = self._sigma * np.identity(self._theta.size)
+            # print(self._sigma)
 
         theta = np.random.multivariate_normal(self.parameters, self._cov_matrix)
         expected_return = self._evaluate(theta, self._num_episodes)

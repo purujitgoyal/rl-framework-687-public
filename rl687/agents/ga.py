@@ -83,7 +83,7 @@ class GA(BBOAgent):
             theta_k = self._population[k, :]
             episode_returns[k] = self._evaluate(theta_k, self._num_episodes)
             episode_thetas[k] = theta_k
-            print(episode_returns[k])
+            # print(episode_returns[k])
             if episode_returns[k] > max_reward:
                 max_reward = episode_returns[k]
                 best_theta = theta_k
